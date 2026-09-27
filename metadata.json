@@ -1,0 +1,6 @@
+{
+  "name": "Atlantic Transport - Logistique Multimodale & Portail RH",
+  "description": "Portail web et solution logistique complète pour Atlantic Transport : transport multimodal mondial, entreposage supply chain, formalités douanières, espace employé sécurisé et backoffice RH d'administration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
