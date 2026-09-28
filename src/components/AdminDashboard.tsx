@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Employee, QuoteRequest, ContactMessage, User } from '../types';
+import { Employee, QuoteRequest, ContactMessage, User, EmployeeContractPdf } from '../types';
 import { 
   Users, 
   UserPlus, 
@@ -18,8 +18,16 @@ import {
   ShieldCheck, 
   Download, 
   Building2,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  FilePlus,
+  Eye,
+  FileCheck,
+  Paperclip,
+  Camera,
+  Image as ImageIcon
 } from 'lucide-react';
+import { ContractViewerModal } from './ContractViewerModal';
 import { 
   getEmployees, 
   getUsers, 
@@ -57,6 +65,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
   const [createdNotification, setCreatedNotification] = useState<{ matricule: string; pass: string; name: string } | null>(null);
   const [resetPassNotification, setResetPassNotification] = useState<{ matricule: string; pass: string } | null>(null);
 
+  // PDF Contract state
+  const [employeeForPdfUpload, setEmployeeForPdfUpload] = useState<Employee | null>(null);
+  const [employeeForContractView, setEmployeeForContractView] = useState<Employee | null>(null);
+  const [formContractPdf, setFormContractPdf] = useState<EmployeeContractPdf | undefined>(undefined);
+  const [uploadSuccessMsg, setUploadSuccessMsg] = useState<string | null>(null);
+
   // Add Form state
   const [nextMatricule, setNextMatricule] = useState(generateNextMatricule());
   const [formFirstName, setFormFirstName] = useState('');
@@ -73,12 +87,69 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
   const [formEmergencyPhone, setFormEmergencyPhone] = useState('');
   const [formNotes, setFormNotes] = useState('');
   const [formTempPassword, setFormTempPassword] = useState(`Atlantic${Math.floor(1000 + Math.random() * 9000)}!`);
+  const [formPhotoUrl, setFormPhotoUrl] = useState<string>('');
 
   // Refresh lists
   const reloadData = () => {
     setEmployees(getEmployees());
     setQuotes(getQuotes());
     setMessages(getMessages());
+  };
+
+  const handlePdfUploadForEmployee = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !employeeForPdfUpload) return;
+
+    if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+      alert("Veuillez sélectionner un document au format PDF.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const pdfObj: EmployeeContractPdf = {
+        fileName: file.name,
+        fileSize: `${(file.size / 1024).toFixed(1)} KB`,
+        uploadedAt: new Date().toLocaleDateString('fr-FR'),
+        dataUrl,
+      };
+
+      updateEmployee(employeeForPdfUpload.id, { contractPdf: pdfObj });
+      reloadData();
+      setUploadSuccessMsg(`Contrat PDF « ${file.name} » rattaché avec succès au matricule ${employeeForPdfUpload.matricule}`);
+      setEmployeeForPdfUpload(null);
+      setTimeout(() => setUploadSuccessMsg(null), 6000);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFormPdfChange = (e: React.ChangeEvent<HTMLInputElement>, isEditing = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf' && !file.name.endsWith('.pdf')) {
+      alert("Veuillez sélectionner un document au format PDF.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const pdfObj: EmployeeContractPdf = {
+        fileName: file.name,
+        fileSize: `${(file.size / 1024).toFixed(1)} KB`,
+        uploadedAt: new Date().toLocaleDateString('fr-FR'),
+        dataUrl,
+      };
+
+      if (isEditing && editingEmployee) {
+        setEditingEmployee({ ...editingEmployee, contractPdf: pdfObj });
+      } else {
+        setFormContractPdf(pdfObj);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // KPIs
@@ -117,6 +188,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
     setFormEmergencyName('');
     setFormEmergencyPhone('');
     setFormNotes('');
+    setFormPhotoUrl('');
+    setFormContractPdf(undefined);
     setIsAddModalOpen(true);
   };
 
@@ -143,7 +216,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
       },
       isActive: true,
       mustChangePassword: true,
-      notes: formNotes
+      notes: formNotes,
+      photoUrl: formPhotoUrl || undefined,
+      contractPdf: formContractPdf,
     }, formTempPassword);
 
     reloadData();
@@ -199,7 +274,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
               Atlantic Transport Administration
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-              Gestion centralisée des collaborateurs, génération de matricules EMP-2026-XXX et pilotage des flux.
+              Gestion centralisée des employés, génération de matricules EMP-2026-XXX et pilotage des flux.
             </p>
           </div>
 
@@ -223,12 +298,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
         </div>
 
         {/* Notifications Banners */}
+        {uploadSuccessMsg && (
+          <div className="p-4 bg-emerald-950/80 border border-emerald-800 rounded-xl flex items-center justify-between gap-4 text-xs text-emerald-200 animate-fade-in">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              <div>{uploadSuccessMsg}</div>
+            </div>
+            <button onClick={() => setUploadSuccessMsg(null)} className="text-emerald-400 hover:text-white cursor-pointer">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {createdNotification && (
           <div className="p-4 bg-emerald-950/80 border border-emerald-800 rounded-xl flex items-center justify-between gap-4 text-xs text-emerald-200 animate-fade-in">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
               <div>
-                <strong>Nouvel employé créé avec succès :</strong> {createdNotification.name} · Matricule auto : <span className="font-mono font-bold text-amber-300">{createdNotification.matricule}</span> · Mot de passe temporaire : <span className="font-mono bg-slate-900 px-2 py-0.5 rounded text-white">{createdNotification.pass}</span> (Changement obligatoire au 1er login).
+                <strong>Nouvel employé créé avec succès :</strong> {createdNotification.name} · Matricule auto : <span className="font-mono font-bold text-amber-300">{createdNotification.matricule}</span> · Mot de passe temporaire : <span className="font-mono bg-slate-950 px-2 py-0.5 rounded text-white">{createdNotification.pass}</span> (Changement obligatoire au 1er login).
               </div>
             </div>
             <button onClick={() => setCreatedNotification(null)} className="text-emerald-400 hover:text-white cursor-pointer">
@@ -242,7 +329,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
             <div className="flex items-center gap-2">
               <Key className="w-5 h-5 text-amber-400 shrink-0" />
               <div>
-                <strong>Mot de passe réinitialisé pour {resetPassNotification.matricule} :</strong> Nouveau passe temporaire : <span className="font-mono bg-slate-900 px-2 py-0.5 rounded text-white">{resetPassNotification.pass}</span>. Le collaborateur devra le renouveler à sa connexion.
+                <strong>Mot de passe réinitialisé pour {resetPassNotification.matricule} :</strong> Nouveau passe temporaire : <span className="font-mono bg-slate-900 px-2 py-0.5 rounded text-white">{resetPassNotification.pass}</span>. L'employé devra le renouveler à sa connexion.
               </div>
             </div>
             <button onClick={() => setResetPassNotification(null)} className="text-amber-400 hover:text-white cursor-pointer">
@@ -379,13 +466,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
             {/* Employees Table */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[880px]">
                   <thead className="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
                     <tr>
                       <th className="py-3.5 px-4 font-semibold">Matricule</th>
                       <th className="py-3.5 px-4 font-semibold">Salarié</th>
                       <th className="py-3.5 px-4 font-semibold">Rôle & Département</th>
                       <th className="py-3.5 px-4 font-semibold">Contrat</th>
+                      <th className="py-3.5 px-4 font-semibold">Contrat PDF</th>
                       <th className="py-3.5 px-4 font-semibold">Salaire Mensuel</th>
                       <th className="py-3.5 px-4 font-semibold">Date Embauche</th>
                       <th className="py-3.5 px-4 font-semibold">Statut</th>
@@ -395,7 +483,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
                   <tbody className="divide-y divide-slate-800/80">
                     {filteredEmployees.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="py-8 text-center text-slate-500">
+                        <td colSpan={9} className="py-8 text-center text-slate-500">
                           Aucun employé ne correspond à vos critères de recherche.
                         </td>
                       </tr>
@@ -406,8 +494,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
                             {emp.matricule}
                           </td>
                           <td className="py-3.5 px-4">
-                            <div className="font-bold text-white">{emp.firstName} {emp.lastName}</div>
-                            <div className="text-[11px] text-slate-400 font-mono">{emp.email}</div>
+                            <div className="flex items-center gap-3">
+                              {emp.photoUrl ? (
+                                <img
+                                  src={emp.photoUrl}
+                                  alt={`${emp.firstName} ${emp.lastName}`}
+                                  className="w-9 h-9 rounded-xl object-cover border border-amber-500/40 shadow-xs shrink-0"
+                                />
+                              ) : (
+                                <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold flex items-center justify-center shrink-0 text-xs">
+                                  {emp.firstName.charAt(0)}{emp.lastName.charAt(0)}
+                                </div>
+                              )}
+                              <div>
+                                <div className="font-bold text-white">{emp.firstName} {emp.lastName}</div>
+                                <div className="text-[11px] text-slate-400 font-mono">{emp.email}</div>
+                              </div>
+                            </div>
                           </td>
                           <td className="py-3.5 px-4">
                             <div className="text-white font-medium">{emp.roleTitle}</div>
@@ -415,6 +518,85 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
                           </td>
                           <td className="py-3.5 px-4 text-slate-300 font-medium">
                             {emp.contractType}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            {emp.contractPdf ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-2 py-0.5 rounded truncate max-w-[110px]" title={emp.contractPdf.fileName}>
+                                  📄 {emp.contractPdf.fileName}
+                                </span>
+                                <button
+                                  onClick={() => setEmployeeForContractView(emp)}
+                                  title="Aperçu RH du contrat"
+                                  className="p-1 hover:text-amber-400 text-slate-400 transition cursor-pointer"
+                                >
+                                  <Eye className="w-3.5 h-3.5" />
+                                </button>
+                                <label
+                                  title="Remplacer le contrat PDF"
+                                  className="p-1 hover:text-white text-slate-400 hover:bg-slate-800 rounded transition cursor-pointer"
+                                >
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (ev) => {
+                                          const dataUrl = ev.target?.result as string;
+                                          updateEmployee(emp.id, {
+                                            contractPdf: {
+                                              fileName: file.name,
+                                              fileSize: `${(file.size / 1024).toFixed(1)} KB`,
+                                              uploadedAt: new Date().toLocaleDateString('fr-FR'),
+                                              dataUrl,
+                                            }
+                                          });
+                                          reloadData();
+                                          setUploadSuccessMsg(`Contrat PDF « ${file.name} » rattaché avec succès au matricule ${emp.matricule}`);
+                                          setTimeout(() => setUploadSuccessMsg(null), 5000);
+                                        };
+                                        reader.readAsDataURL(file);
+                                      }
+                                    }}
+                                  />
+                                </label>
+                              </div>
+                            ) : (
+                              <label className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded text-[11px] font-semibold inline-flex items-center gap-1 transition cursor-pointer">
+                                <FilePlus className="w-3 h-3" />
+                                <span>+ Joindre PDF</span>
+                                <input
+                                  type="file"
+                                  accept="application/pdf"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onload = (ev) => {
+                                        const dataUrl = ev.target?.result as string;
+                                        updateEmployee(emp.id, {
+                                          contractPdf: {
+                                            fileName: file.name,
+                                            fileSize: `${(file.size / 1024).toFixed(1)} KB`,
+                                            uploadedAt: new Date().toLocaleDateString('fr-FR'),
+                                            dataUrl,
+                                          }
+                                        });
+                                        reloadData();
+                                        setUploadSuccessMsg(`Contrat PDF « ${file.name} » rattaché avec succès au matricule ${emp.matricule}`);
+                                        setTimeout(() => setUploadSuccessMsg(null), 5000);
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
+                                  }}
+                                />
+                              </label>
+                            )}
                           </td>
                           <td className="py-3.5 px-4 font-mono font-bold text-white tabular-nums">
                             {emp.monthlySalary.toLocaleString('fr-CA', { minimumFractionDigits: 2 })} CAD
@@ -614,6 +796,74 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
                 </div>
               </div>
 
+              {/* Photo d'identité officielle du salarié */}
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] uppercase text-amber-400 font-bold flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Photo d'identité du salarié</span>
+                    <span className="text-[10px] lowercase font-normal text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">
+                      Recommandé RH
+                    </span>
+                  </label>
+                  <span className="text-[10px] text-slate-400">Affichée sur ses informations d'embauche</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {formPhotoUrl ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={formPhotoUrl}
+                        alt="Aperçu photo d'identité"
+                        className="w-20 h-24 sm:w-24 sm:h-28 object-cover rounded-xl border-2 border-amber-500/70 shadow-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormPhotoUrl('')}
+                        title="Supprimer la photo"
+                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-500 text-white p-1 rounded-full shadow-lg transition cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl border-2 border-dashed border-slate-700 bg-slate-900/60 flex flex-col items-center justify-center text-slate-500 shrink-0">
+                      <Camera className="w-6 h-6 text-slate-600 mb-1" />
+                      <span className="text-[9px] text-center px-1 text-slate-400">Photo d'identité</span>
+                    </div>
+                  )}
+
+                  <div className="flex-1 w-full space-y-2">
+                    <label className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 hover:border-amber-500/50 rounded-xl font-semibold text-xs transition cursor-pointer w-full text-center">
+                      <Upload className="w-4 h-4" />
+                      <span>{formPhotoUrl ? "Remplacer la photo sélectionnée" : "Téléverser la photo d'identité du salarié"}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("La taille de la photo ne doit pas dépasser 5 Mo.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const dataUrl = ev.target?.result as string;
+                            setFormPhotoUrl(dataUrl);
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                    </label>
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      Formats acceptés : JPG, PNG, WebP (max 5 Mo). Cette photo officielle sera intégrée à son dossier RH et visible par le salarié dans la section de ses informations d'embauche.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Names */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -795,6 +1045,71 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onOpen
             </div>
 
             <form onSubmit={handleEditSubmit} className="space-y-4 text-xs">
+              {/* Photo d'identité officielle du salarié */}
+              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] uppercase text-amber-400 font-bold flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Photo d'identité du salarié</span>
+                  </label>
+                  <span className="text-[10px] text-slate-400">Affichée sur ses informations d'embauche</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {editingEmployee.photoUrl ? (
+                    <div className="relative shrink-0">
+                      <img
+                        src={editingEmployee.photoUrl}
+                        alt="Photo d'identité"
+                        className="w-20 h-24 sm:w-24 sm:h-28 object-cover rounded-xl border-2 border-amber-500/70 shadow-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setEditingEmployee({ ...editingEmployee, photoUrl: undefined })}
+                        title="Supprimer la photo"
+                        className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-500 text-white p-1 rounded-full shadow-lg transition cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl border-2 border-dashed border-slate-700 bg-slate-900/60 flex flex-col items-center justify-center text-slate-500 shrink-0">
+                      <Camera className="w-6 h-6 text-slate-600 mb-1" />
+                      <span className="text-[9px] text-center px-1 text-slate-400">Aucune photo</span>
+                    </div>
+                  )}
+
+                  <div className="flex-1 w-full space-y-2">
+                    <label className="flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 hover:border-amber-500/50 rounded-xl font-semibold text-xs transition cursor-pointer w-full text-center">
+                      <Upload className="w-4 h-4" />
+                      <span>{editingEmployee.photoUrl ? "Remplacer la photo" : "Téléverser la photo d'identité"}</span>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg, image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("La taille de la photo ne doit pas dépasser 5 Mo.");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const dataUrl = ev.target?.result as string;
+                            setEditingEmployee({ ...editingEmployee, photoUrl: dataUrl });
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                    </label>
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      Mettre à jour la photo d'identité officielle pour le badge et les documents d'embauche du salarié.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-300 font-semibold mb-1">Prénom</label>

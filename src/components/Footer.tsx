@@ -1,6 +1,6 @@
 import React from 'react';
 import { Logo } from './Logo';
-import { MapPin, Phone, Mail, ShieldCheck, Lock, Code, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Mail, Lock } from 'lucide-react';
 
 interface FooterProps {
   onOpenLogin: () => void;
@@ -11,15 +11,13 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenLogin,
-  onOpenAdmin,
-  onOpenPhpPack,
   onNavigateHome,
 }) => {
   return (
     <footer className="bg-slate-950 text-slate-300 border-t border-slate-800">
       {/* Main Footer Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10">
           
           {/* Brand & Slogan */}
           <div className="lg:col-span-4 space-y-4">
@@ -32,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({
             <p className="text-xs text-slate-400 leading-relaxed">
               Commissaire de transport international et opérateur d'entreposage stratégique basé à Surrey, Colombie-Britannique, Canada. Connectant les corridors transcanadiens aux principales routes maritimes et aériennes mondiales.
             </p>
-            <div className="pt-2 text-xs text-slate-500 font-mono">
+            <div className="pt-1 text-xs text-slate-500 font-mono">
               ASFC / CBSA # A1948 · IATA Cargo # 01-4-8921
             </div>
           </div>
@@ -83,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>+1 (506) 802-2226 · WhatsApp : +1 (506) 802-2226</span>
+                <span>+1 (506) 802-2226</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-amber-400 shrink-0" />
@@ -94,34 +92,18 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* Portails & Livrables */}
+          {/* Espace Employé - Sole link for staff, no admin backoffice shown to visitors */}
           <div className="lg:col-span-2 space-y-3">
             <h4 className="text-xs uppercase font-bold text-white tracking-wider">
-              Accès & Livrables
+              Espace Interne
             </h4>
             <div className="flex flex-col gap-2">
               <button
                 onClick={onOpenLogin}
-                className="w-full text-left px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-xs text-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
+                className="w-full text-left px-3 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-xs text-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-400" />
-                <span>Portail Employé</span>
-              </button>
-
-              <button
-                onClick={onOpenAdmin}
-                className="w-full text-left px-3 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-xs text-slate-200 transition-colors flex items-center gap-2 cursor-pointer"
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-                <span>Backoffice Admin</span>
-              </button>
-
-              <button
-                onClick={onOpenPhpPack}
-                className="w-full text-left px-3 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 rounded-lg text-xs text-amber-300 font-semibold transition-colors flex items-center gap-2 cursor-pointer"
-              >
-                <Code className="w-3.5 h-3.5 text-amber-400" />
-                <span>Pack PHP/MySQL (public_html)</span>
+                <span>Espace Employé</span>
               </button>
             </div>
           </div>
@@ -129,15 +111,15 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="mt-10 sm:mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            © {new Date().getFullYear()} Atlantic Transport. Tous droits réservés.
+            © {new Date().getFullYear()} ATLANTIC TRANSPORT LTD. Tous droits réservés.
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <span>Surrey, BC · Canada</span>
-            <span aria-hidden="true">·</span>
-            <span>Conditions Générales de Transport</span>
-            <span aria-hidden="true">·</span>
+            <span aria-hidden="true" className="hidden sm:inline">·</span>
+            <span>Conditions Générales</span>
+            <span aria-hidden="true" className="hidden sm:inline">·</span>
             <span>Sécurité des Données</span>
           </div>
         </div>

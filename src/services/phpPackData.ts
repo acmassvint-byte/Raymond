@@ -296,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Portail Collaborateur & Admin - Atlantic Transport</title>
+    <title>Connexion Portail Employé & Admin - Atlantic Transport</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
@@ -416,7 +416,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   {
     filename: 'employee/index.php',
     path: 'employee/index.php',
-    description: 'Espace collaborateur complet : visualisation du matricule, poste, contrat, salaire, date d\'embauche et fiche de paie.',
+    description: 'Espace employé complet : visualisation du matricule, poste, contrat, salaire, date d\'embauche et fiche de paie.',
     content: `<?php
 require_once '../config.php';
 requireAuth();
@@ -439,15 +439,15 @@ if (!$emp) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Espace Collaborateur - <?= sanitize($emp['first_name'] . ' ' . $emp['last_name']) ?> | Atlantic Transport</title>
+    <title>Espace Employé - <?= sanitize($emp['first_name'] . ' ' . $emp['last_name']) ?> | Atlantic Transport</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
     <!-- Topbar -->
     <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <span class="text-amber-400 font-black tracking-wider text-lg">ATLANTIC TRANSPORT</span>
-            <span class="text-xs text-slate-400 hidden sm:inline">| Portail Collaborateur</span>
+            <span class="text-amber-400 font-black tracking-wider text-lg">ATLANTIC TRANSPORT LTD</span>
+            <span class="text-xs text-slate-400 hidden sm:inline">| Portail Employé</span>
         </div>
         <div class="flex items-center gap-4 text-sm">
             <span class="text-slate-300"><?= sanitize($emp['first_name'] . ' ' . $emp['last_name']) ?></span>
@@ -456,7 +456,7 @@ if (!$emp) {
     </header>
 
     <div class="max-w-5xl mx-auto p-6 md:p-10">
-        <!-- Bannière Collaborateur -->
+        <!-- Bannière Employé -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
                 <div class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Fiche Salarié Officielle</div>
@@ -569,7 +569,7 @@ $employees = $stmt->fetchAll();
 <body class="bg-slate-950 text-slate-100 min-h-screen">
     <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <span class="text-amber-400 font-black tracking-wider text-lg">ATLANTIC TRANSPORT</span>
+            <span class="text-amber-400 font-black tracking-wider text-lg">ATLANTIC TRANSPORT LTD</span>
             <span class="text-xs bg-amber-500/20 text-amber-300 font-bold px-2 py-0.5 rounded">BACKOFFICE ADMIN</span>
         </div>
         <div class="flex items-center gap-4 text-sm">
@@ -880,7 +880,7 @@ ServerSignature Off
     content: `# Guide de Déploiement : Atlantic Transport (PHP / MySQL)
 
 ## Informations Entreprise
-- **Nom** : Atlantic Transport
+- **Nom** : ATLANTIC TRANSPORT LTD
 - **Slogan** : "Le monde sans frontières, votre logistique sans limites."
 - **Siège Social** : King George Blvd, Surrey, BC V3T 2W1, Canada.
 - **Téléphone / WhatsApp** : +1 (506) 802-2226 / WhatsApp : +1 (506) 802-2226

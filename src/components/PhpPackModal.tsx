@@ -46,7 +46,7 @@ export const PhpPackModal: React.FC<PhpPackModalProps> = ({ isOpen, onClose }) =
                 Pack Déploiement PHP / MySQL (Prêt pour public_html)
               </h2>
               <p className="text-xs text-amber-400">
-                Atlantic Transport · Code source serveur & Schéma SQL pour hébergement cPanel / Apache
+                ATLANTIC TRANSPORT LTD · Code source serveur & Schéma SQL pour hébergement cPanel / Apache
               </p>
             </div>
           </div>

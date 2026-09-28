@@ -72,20 +72,20 @@ export const ContactSection: React.FC = () => {
                 <div className="p-3 bg-blue-900 text-white rounded-xl shrink-0 shadow-xs">
                   <Phone className="w-5 h-5 text-amber-400" />
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <h4 className="text-xs uppercase font-bold text-slate-500">Téléphone / WhatsApp</h4>
                   <p className="text-sm font-bold text-slate-900 mt-1">
                     +1 (506) 802-2226
                   </p>
-                  <div className="mt-1 flex items-center gap-2">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <a
                       href="https://wa.me/15068022226"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 hover:bg-emerald-100 transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 hover:bg-emerald-100 transition"
                     >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>WhatsApp Direct : +1 (506) 802-2226</span>
+                      <MessageSquare className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>WhatsApp : +1 (506) 802-2226</span>
                     </a>
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export const ContactSection: React.FC = () => {
 
                 {/* Floating Map Label */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-3 bg-slate-950/95 border border-amber-500/50 rounded-lg p-2.5 text-center shadow-xl backdrop-blur-md">
-                  <p className="text-xs font-bold text-white">Atlantic Transport Headquarters</p>
+                  <p className="text-xs font-bold text-white">ATLANTIC TRANSPORT LTD Headquarters</p>
                   <p className="text-[10px] text-amber-400 font-mono">King George Blvd · Surrey Terminal</p>
                 </div>
               </div>

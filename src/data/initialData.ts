@@ -74,7 +74,13 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     },
     isActive: true,
     mustChangePassword: true,
-    notes: 'Nouvelle recrue pôle maritime Asie-Pacifique / Amérique du Nord.'
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+    notes: 'Nouvelle recrue pôle maritime Asie-Pacifique / Amérique du Nord.',
+    contractPdf: {
+      fileName: 'contrat_embauche_cdi_j_tremblay.pdf',
+      fileSize: '342 KB',
+      uploadedAt: '15/02/2026',
+    }
   },
   {
     id: 'emp-2',
@@ -97,7 +103,13 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     },
     isActive: true,
     mustChangePassword: false,
-    notes: 'Spécialiste accréditée transit frontalier US-Canada et dédouanement maritime.'
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80',
+    notes: 'Spécialiste accréditée transit frontalier US-Canada et dédouanement maritime.',
+    contractPdf: {
+      fileName: 'contrat_cadre_cbsa_m_vanderberg.pdf',
+      fileSize: '418 KB',
+      uploadedAt: '01/06/2025',
+    }
   },
   {
     id: 'emp-3',
@@ -120,6 +132,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     },
     isActive: true,
     mustChangePassword: false,
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
     notes: 'Gestion des flux cross-docking et intégration WMS radio-fréquence.'
   },
   {
@@ -143,6 +156,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     },
     isActive: false,
     mustChangePassword: false,
+    photoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80',
     notes: 'Compte désactivé pour congé sabbatique autorisé.'
   }
 ];

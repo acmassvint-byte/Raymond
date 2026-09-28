@@ -12,6 +12,13 @@ export interface User {
   lastLogin?: string;
 }
 
+export interface EmployeeContractPdf {
+  fileName: string;
+  fileSize?: string;
+  uploadedAt: string;
+  dataUrl?: string;
+}
+
 export interface Employee {
   id: string;
   matricule: string; // e.g. EMP-2026-001
@@ -34,7 +41,9 @@ export interface Employee {
   isActive: boolean;
   mustChangePassword: boolean;
   avatarUrl?: string;
+  photoUrl?: string; // Photo d'identité officielle du salarié (téléversée par l'admin)
   notes?: string;
+  contractPdf?: EmployeeContractPdf;
 }
 
 export interface QuoteRequest {

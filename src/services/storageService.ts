@@ -51,7 +51,29 @@ export function getUsers(): User[] {
 export function getEmployees(): Employee[] {
   initStorage();
   const data = localStorage.getItem(STORAGE_KEYS.EMPLOYEES);
-  return data ? JSON.parse(data) : INITIAL_EMPLOYEES;
+  if (!data) return INITIAL_EMPLOYEES;
+  const parsed: Employee[] = JSON.parse(data);
+  let updated = false;
+  parsed.forEach(emp => {
+    if (!emp.photoUrl) {
+      const match = INITIAL_EMPLOYEES.find(ie => ie.id === emp.id);
+      if (match?.photoUrl) {
+        emp.photoUrl = match.photoUrl;
+        updated = true;
+      }
+    }
+    if (!emp.contractPdf) {
+      const match = INITIAL_EMPLOYEES.find(ie => ie.id === emp.id);
+      if (match?.contractPdf) {
+        emp.contractPdf = match.contractPdf;
+        updated = true;
+      }
+    }
+  });
+  if (updated) {
+    saveEmployees(parsed);
+  }
+  return parsed;
 }
 
 export function saveEmployees(employees: Employee[]): void {

@@ -81,7 +81,7 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
         </h3>
         
         <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
-          Bonjour <strong className="text-amber-400">{session.employee?.firstName || 'Collaborateur'}</strong>, il s'agit de votre première connexion au portail Atlantic Transport avec un mot de passe temporaire. Vous devez obligatoirement définir un mot de passe personnel avant d'accéder à vos informations.
+          Bonjour <strong className="text-amber-400">{session.employee?.firstName || 'Employé'}</strong>, il s'agit de votre première connexion au portail <strong className="text-amber-400 font-semibold">ATLANTIC TRANSPORT LTD</strong> avec un mot de passe temporaire. Vous devez obligatoirement définir un mot de passe personnel avant d'accéder à vos informations.
         </p>
 
         {error && (

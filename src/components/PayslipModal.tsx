@@ -57,7 +57,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-black text-slate-900 tracking-tight font-heading">ATLANTIC TRANSPORT</span>
-                <span className="text-xs bg-blue-100 text-blue-900 font-bold px-2 py-0.5 rounded">INC.</span>
+                <span className="text-xs bg-amber-500 text-slate-950 font-bold px-2 py-0.5 rounded">LTD</span>
               </div>
               <p className="text-xs text-slate-600 mt-1">King George Blvd, Surrey, BC V3T 2W1, Canada</p>
               <p className="text-xs text-slate-500">NEQ / Business No. : 89401 2341 RC0001 · CBSA Carrier A1948</p>
@@ -163,7 +163,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({
 
           {/* Legal mentions */}
           <div className="pt-4 border-t border-slate-200 text-[10px] text-slate-400 flex items-center justify-between">
-            <span>Bulletin de paie généré électroniquement par Atlantic Transport HR Portal · Surrey (BC).</span>
+            <span>Bulletin de paie généré électroniquement par ATLANTIC TRANSPORT LTD HR Portal · Surrey (BC).</span>
             <span>Document à conserver sans limitation de durée.</span>
           </div>
 

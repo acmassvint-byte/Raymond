@@ -101,7 +101,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onSelectServic
             Des solutions logistiques complètes et sur mesure pour vos flux mondiaux.
           </h2>
           <p className="text-slate-600 text-base sm:text-lg mt-3 leading-relaxed">
-            De la prise en charge à l'usine d'origine jusqu'à la livraison finale en entrepôt, Atlantic Transport maîtrise l'ensemble de la chaîne de valeur du transport et de la logistique internationale.
+            De la prise en charge à l'usine d'origine jusqu'à la livraison finale en entrepôt, <strong className="font-semibold text-slate-800">ATLANTIC TRANSPORT LTD</strong> maîtrise l'ensemble de la chaîne de valeur du transport et de la logistique internationale.
           </p>
         </div>
 

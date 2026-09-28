@@ -14,7 +14,7 @@ export const AboutSection: React.FC = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200 group bg-slate-900">
               <img
                 src={hqImage}
-                alt="Siège social d'Atlantic Transport à Surrey, Colombie-Britannique, Canada"
+                alt="Siège social d'ATLANTIC TRANSPORT LTD à Surrey, Colombie-Britannique, Canada"
                 referrerPolicy="no-referrer"
                 className="w-full h-80 sm:h-96 object-cover object-center group-hover:scale-102 transition-transform duration-500"
               />
@@ -68,7 +68,7 @@ export const AboutSection: React.FC = () => {
             </div>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Fondée avec la volonté d'offrir aux exportateurs et importateurs une fluidité opérationnelle absolue, <strong className="text-slate-900 font-semibold">Atlantic Transport</strong> est devenue une référence nord-américaine de la commission de transport et de la supply chain.
+              Fondée avec la volonté d'offrir aux exportateurs et importateurs une fluidité opérationnelle absolue, <strong className="text-slate-900 font-semibold">ATLANTIC TRANSPORT LTD</strong> est devenue une référence nord-américaine de la commission de transport et de la supply chain.
             </p>
 
             <blockquote className="border-l-4 border-amber-500 pl-4 py-1 text-slate-800 font-medium italic text-sm">

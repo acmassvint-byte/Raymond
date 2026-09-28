@@ -12,7 +12,7 @@ import { ForcePasswordChangeModal } from './components/ForcePasswordChangeModal'
 import { EmployeeDashboard } from './components/EmployeeDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { PhpPackModal } from './components/PhpPackModal';
-import { getCurrentSession, setSession, SessionState, initStorage } from './services/storageService';
+import { getCurrentSession, setSession, SessionState, initStorage, getEmployees } from './services/storageService';
 
 export default function App() {
   const [session, setSessionState] = useState<SessionState | null>(null);
@@ -154,7 +154,7 @@ export default function App() {
 
         {currentView === 'employee' && session && session.employee && (
           <EmployeeDashboard
-            employee={session.employee}
+            employee={getEmployees().find(e => e.id === session.employee?.id) || session.employee}
             user={session.user}
             onLogout={handleLogout}
             onOpenPasswordChange={() => setMustChangePasswordSession(session)}

@@ -1,7 +1,26 @@
 import React, { useState } from 'react';
 import { Employee, User, LeaveRequest } from '../types';
-import { UserCheck, Calendar, Briefcase, DollarSign, MapPin, Phone, Mail, FileText, CheckCircle2, Clock, AlertCircle, Plus } from 'lucide-react';
+import { 
+  UserCheck, 
+  Calendar, 
+  Briefcase, 
+  DollarSign, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  FileText, 
+  CheckCircle2, 
+  Clock, 
+  AlertCircle, 
+  Plus, 
+  Eye, 
+  Lock, 
+  FileCheck,
+  Camera,
+  ShieldCheck
+} from 'lucide-react';
 import { PayslipModal } from './PayslipModal';
+import { ContractViewerModal } from './ContractViewerModal';
 import { getLeaveRequests, addLeaveRequest } from '../services/storageService';
 
 interface EmployeeDashboardProps {
@@ -18,6 +37,7 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
   onOpenPasswordChange,
 }) => {
   const [selectedPayslipMonth, setSelectedPayslipMonth] = useState<string | null>(null);
+  const [isContractViewerOpen, setIsContractViewerOpen] = useState(false);
   const [leaves, setLeaves] = useState<LeaveRequest[]>(() => getLeaveRequests(employee.id));
   const [showLeaveForm, setShowLeaveForm] = useState(false);
   const [leaveType, setLeaveType] = useState<LeaveRequest['type']>('Congés Payés');
@@ -46,14 +66,22 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
         {/* Welcome Banner */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold text-2xl flex items-center justify-center font-heading">
-              {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
-            </div>
+            {employee.photoUrl ? (
+              <img
+                src={employee.photoUrl}
+                alt={`${employee.firstName} ${employee.lastName}`}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-500/60 shadow-lg shrink-0"
+              />
+            ) : (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 font-bold text-2xl flex items-center justify-center font-heading shrink-0">
+                {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}
+              </div>
+            )}
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 tracking-wider uppercase">
-                <span>Espace Collaborateur Sécurisé</span>
+                <span>Espace Employé Sécurisé</span>
                 <span aria-hidden="true" className="text-slate-600">·</span>
-                <span>Atlantic Transport</span>
+                <span>ATLANTIC TRANSPORT LTD</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 font-heading">
                 {employee.firstName} {employee.lastName}
@@ -80,66 +108,191 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
           </div>
         </div>
 
-        {/* Core Employee Info Grid (Required by Prompt) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          {/* Card 1: Matricule & Poste */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
-              <Briefcase className="w-4 h-4 text-amber-400" />
-              <span>Poste & Département</span>
+        {/* Contrat de Travail Confidentiel (Consultation sécurisée, non téléchargeable) */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/30 shrink-0">
+                <FileCheck className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-bold text-white font-heading">
+                    Contrat de Travail Salarié (Fichier PDF officiel)
+                  </h3>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {employee.contractPdf ? 'Fichier PDF Enregistré' : 'Contrat Numérique Actif'}
+                  </span>
+                  <span className="text-[10px] bg-red-950 text-red-300 font-bold px-2 py-0.5 rounded border border-red-800 flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" />
+                    Non téléchargeable
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  {employee.contractPdf?.fileName ? (
+                    <>Fichier : <strong className="text-amber-400 font-mono">{employee.contractPdf.fileName}</strong> {employee.contractPdf.fileSize ? `(${employee.contractPdf.fileSize})` : ''} · </>
+                  ) : null}
+                  Type : <strong className="text-slate-200 font-medium">{employee.contractType}</strong> · Rôle : {employee.roleTitle} · ATLANTIC TRANSPORT LTD
+                </p>
+              </div>
             </div>
-            <div className="text-base font-bold text-white leading-tight">
-              {employee.roleTitle}
+
+            <button
+              onClick={() => setIsContractViewerOpen(true)}
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition cursor-pointer shadow-md flex items-center justify-center gap-2 shrink-0"
+            >
+              <Eye className="w-4 h-4" />
+              <span>Consulter mon Contrat en Ligne</span>
+            </button>
+          </div>
+
+          <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center gap-2">
+              <Lock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span>Document RH officiel — Consultation intégrale en ligne sécurisée (Téléchargement, impression et extraction désactivés par la direction).</span>
             </div>
-            <div className="text-xs text-slate-400 mt-2">
-              Division : <span className="text-slate-200">{employee.department}</span>
+            <span className="text-[10px] font-mono text-slate-500 hidden sm:inline">{employee.matricule}</span>
+          </div>
+        </div>
+
+        {/* Section Informations d'Embauche & Photo d'Identité */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-7 space-y-6 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 uppercase tracking-wider">
+                <Briefcase className="w-4 h-4" />
+                <span>Dossier d'Embauche Officiel</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-white font-heading mt-1">
+                Informations d'Embauche & Photo d'Identité
+              </h2>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Embauche Validée & Active</span>
+              </span>
             </div>
           </div>
 
-          {/* Card 2: Contrat */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
-              <FileText className="w-4 h-4 text-emerald-400" />
-              <span>Type de Contrat</span>
-            </div>
-            <div className="text-lg font-bold text-emerald-400">
-              {employee.contractType}
-            </div>
-            <div className="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Statut : En poste actif</span>
-            </div>
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            {/* Colonne Photo d'Identité du Salarié (Badge RH Conforme) */}
+            <div className="lg:col-span-4 xl:col-span-3 flex">
+              <div className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-between text-center relative overflow-hidden group shadow-lg">
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600" />
+                
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 mb-3 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  Photo d'Identité Salarié
+                </span>
 
-          {/* Card 3: Salaire Mensuel */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
-              <DollarSign className="w-4 h-4 text-amber-400" />
-              <span>Salaire Mensuel Brut</span>
-            </div>
-            <div className="text-2xl font-black text-amber-400 font-mono tabular-nums">
-              {employee.monthlySalary.toLocaleString('fr-CA', { minimumFractionDigits: 2 })} CAD
-            </div>
-            <div className="text-xs text-slate-400 mt-2">
-              Base annuelle : {(employee.monthlySalary * 12).toLocaleString()} CAD
-            </div>
-          </div>
+                <div className="relative mb-3">
+                  {employee.photoUrl ? (
+                    <img
+                      src={employee.photoUrl}
+                      alt={`Photo d'identité de ${employee.firstName} ${employee.lastName}`}
+                      className="w-32 h-40 sm:w-36 sm:h-44 object-cover rounded-xl border-2 border-amber-500/60 shadow-xl"
+                    />
+                  ) : (
+                    <div className="w-32 h-40 sm:w-36 sm:h-44 rounded-xl bg-slate-900 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center p-3 text-slate-500">
+                      <Camera className="w-8 h-8 text-slate-600 mb-2" />
+                      <span className="text-xs text-slate-300 font-medium">Photo d'identité</span>
+                      <span className="text-[10px] text-slate-500 mt-1">En attente versement RH</span>
+                    </div>
+                  )}
+                  <span className="absolute bottom-2 right-2 bg-emerald-500 text-slate-950 p-1 rounded-full shadow-md" title="Photo vérifiée et conforme">
+                    <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />
+                  </span>
+                </div>
 
-          {/* Card 4: Date d'embauche */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xs">
-            <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
-              <Calendar className="w-4 h-4 text-blue-400" />
-              <span>Date d'Embauche</span>
-            </div>
-            <div className="text-lg font-bold text-white">
-              {employee.hireDate}
-            </div>
-            <div className="text-xs text-slate-400 mt-2">
-              Lieu : Surrey Hub (BC V3T 2W1)
-            </div>
-          </div>
+                <div className="space-y-1">
+                  <div className="font-heading font-bold text-sm text-white">
+                    {employee.firstName} {employee.lastName}
+                  </div>
+                  <div className="text-xs font-mono font-bold text-amber-400">
+                    {employee.matricule}
+                  </div>
+                </div>
 
+                <div className="mt-3 text-[10px] text-slate-400 bg-slate-900 px-2.5 py-1.5 rounded-lg border border-slate-800 w-full">
+                  Accréditation ATLANTIC TRANSPORT LTD
+                </div>
+              </div>
+            </div>
+
+            {/* Grille des informations d'embauche */}
+            <div className="lg:col-span-8 xl:col-span-9 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              {/* Poste & Département */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
+                    <Briefcase className="w-4 h-4 text-amber-400" />
+                    <span>Poste & Département</span>
+                  </div>
+                  <div className="text-base font-bold text-white leading-snug">
+                    {employee.roleTitle}
+                  </div>
+                </div>
+                <div className="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-850">
+                  Division : <span className="text-slate-200 font-medium">{employee.department}</span>
+                </div>
+              </div>
+
+              {/* Date d'Embauche */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
+                    <Calendar className="w-4 h-4 text-blue-400" />
+                    <span>Date d'Embauche Officielle</span>
+                  </div>
+                  <div className="text-lg font-bold text-white">
+                    {employee.hireDate}
+                  </div>
+                </div>
+                <div className="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-850">
+                  Lieu d'affectation : <span className="text-slate-200 font-medium">{employee.workLocation}</span>
+                </div>
+              </div>
+
+              {/* Type de Contrat */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
+                    <FileText className="w-4 h-4 text-emerald-400" />
+                    <span>Type de Contrat d'Embauche</span>
+                  </div>
+                  <div className="text-lg font-bold text-emerald-400">
+                    {employee.contractType}
+                  </div>
+                </div>
+                <div className="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-850 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Statut : En poste actif / Confirmé</span>
+                </div>
+              </div>
+
+              {/* Salaire convenu à l'embauche */}
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs uppercase font-semibold mb-2">
+                    <DollarSign className="w-4 h-4 text-amber-400" />
+                    <span>Rémunération Contractuelle</span>
+                  </div>
+                  <div className="text-xl font-black text-amber-400 font-mono tabular-nums">
+                    {employee.monthlySalary.toLocaleString('fr-CA', { minimumFractionDigits: 2 })} CAD <span className="text-xs font-normal text-slate-400">/ mois</span>
+                  </div>
+                </div>
+                <div className="text-xs text-slate-400 mt-3 pt-2 border-t border-slate-850">
+                  Base annuelle convenue : <strong className="text-slate-200">{(employee.monthlySalary * 12).toLocaleString()} CAD</strong>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
         </div>
 
         {/* Detailed Secondary Information & Payslips Row */}
@@ -344,6 +497,14 @@ export const EmployeeDashboard: React.FC<EmployeeDashboardProps> = ({
           employee={employee}
           month={selectedPayslipMonth}
           onClose={() => setSelectedPayslipMonth(null)}
+        />
+      )}
+
+      {/* Contract Viewer Modal (Non-downloadable) */}
+      {isContractViewerOpen && (
+        <ContractViewerModal
+          employee={employee}
+          onClose={() => setIsContractViewerOpen(false)}
         />
       )}
     </div>

@@ -128,16 +128,16 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({ searchedCode }
 
           {/* Quick selection chips (functional buttons) */}
           <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-            <span>Expéditions de démonstration :</span>
+            <span className="w-full sm:w-auto font-medium">Exemples de suivi :</span>
             <button
               type="button"
               onClick={() => {
                 setQuery('ATL-8924-CA');
                 setResult(findTracking('ATL-8924-CA') || null);
               }}
-              className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 rounded-md font-mono text-slate-800 transition cursor-pointer"
+              className="max-w-full px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-md font-mono text-xs text-slate-800 transition cursor-pointer truncate"
             >
-              ATL-8924-CA (Maritime Vancouver &rarr; Rotterdam)
+              ATL-8924-CA (Maritime Vancouver)
             </button>
             <button
               type="button"
@@ -145,9 +145,9 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({ searchedCode }
                 setQuery('ATL-5412-EU');
                 setResult(findTracking('ATL-5412-EU') || null);
               }}
-              className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-300 rounded-md font-mono text-slate-800 transition cursor-pointer"
+              className="max-w-full px-2.5 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-md font-mono text-xs text-slate-800 transition cursor-pointer truncate"
             >
-              ATL-5412-EU (Aérien Francfort &rarr; Surrey BC)
+              ATL-5412-EU (Aérien Surrey)
             </button>
           </div>
         </div>
