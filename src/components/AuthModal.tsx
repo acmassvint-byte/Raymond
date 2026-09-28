@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function AuthModal({ onClose, onLogin }: any) {
+export function AuthModal({ onClose, onLogin }: any) {
   const [tab, setTab] = useState<"employe" | "admin">("employe");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
